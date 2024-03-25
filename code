@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Login</title>
+</head>
+<body>
+ <h1>Login</h1>
+ <form action="http://localhost:8080/WebApplication4/NewServlet1" method="post">
+ <label for="name">name:</label><br>
+ <input type="text" id="name" name="name" required><br>
+ <label for="email">email:</label><br>
+ <input type="email" id="email" name="email" required><br><br>
+ <input type="submit" value="Login">
+ </form>
+</body>
+</html>
+Session :
+protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+ throws ServletException, IOException {
+ response.setContentType("text/html;charset=UTF-8");
+ try (PrintWriter out = response.getWriter()) {
+ String name = request.getParameter("name");
+ String email = request.getParameter("email");
+ HttpSession session = request.getSession();
+ session.setAttribute("name", name);
+ session.setAttribute("email", email);
+ response.setContentType("text/html");
+ out.println("<html><head><title>Form Submission</title></head><body>");
+ out.println("<h2>Form submitted successfully!</h2>");
+ out.println("<p>Name: " + name + "</p>");
+ out.println("<p>Email: " + email + "</p>");
+ out.println("</body></html>");
+ }
+ }
+
+
+
+
+
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+public class NewServlet2 extends HttpServlet {
+protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+ throws ServletException, IOException {
+ response.setContentType("text/html;charset=UTF-8");
+ try (PrintWriter out = response.getWriter()) {
+ out.println("<html><head><title>Product List</title></head><body>");
+ out.println("<h1>Product List</h1>");
+ out.println("<ul>");
+ out.println("<li><a 
+href='http://localhost:8080/WebApplication4/NewServlet1?id=1'>Product 1</a></li>");
+ out.println("<li><a 
+href='http://localhost:8080/WebApplication4/NewServlet1?id=2'>Product 2</a></li>");
+ out.println("<li><a 
+href='http://localhost:8080/WebApplication4/NewServlet1?id=3'>Product 3</a></li>");
+ out.println("</ul>");
+ out.println("</body></html>");
+ }
+ }
+</editor-fold>
+}
+Servlet:
+public class NewServlet1 extends HttpServlet {
+ protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+ response.setContentType("text/html;charset=UTF-8");
+ try (PrintWriter out = response.getWriter()) {
+ int productId = Integer.parseInt(request.getParameter("id"));
+ String productName = "Product " + productId;
+ String description = "Description of " + productName;
+ double price = 10.99; // Sample price
+ response.setContentType("text/html");
+ out.println("<html><head><title>" + productName + "</title></head><body>");
+ out.println("<h1>" + productName + "</h1>");
+ out.println("<p>Description: " + description + "</p>");
+ out.println("<p>Price: $" + price + "</p>");
+ out.println("<a href='http://localhost:8080/WebApplication4/NewServlet2'>Back to 
+Product List</a>");
+ out.println("</body></html>");
+ }
+ }
+}
+
+
+
+
+
+
+
+</head>
+<body>
+ <h1>Login</h1>
+ <form action="http://localhost:8080/WebApplication4/NewServlet2" method="post">
+ <label for="email">Email:</label><br>
+ <input type="email" id="email" name="email" required><br>
+ <label for="password">Password:</label><br>
+ <input type="password" id="password" name="password" required><br><br>
+ <input type="submit" value="Login">
+ </form>
+</body>
+</html>
+Servlet:
+public class NewServlet2 extends HttpServlet {
+ private static final String VALID_EMAIL = "user@gmail.com";
+ private static final String VALID_PASSWORD = "password";
+ protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+ throws ServletException, IOException {
+ response.setContentType("text/html;charset=UTF-8");
+ try (PrintWriter out = response.getWriter()) {
+ /* TODO output your page here. You may use following sample code. */
+ String email = request.getParameter("email");
+ String password = request.getParameter("password");
+if (isValidUser(email, password)) {
+ Cookie loginCookie = new Cookie("user", email);
+ loginCookie.setPath("/");
+ loginCookie.setMaxAge(30 * 60);
+ response.addCookie(loginCookie);
+ response.sendRedirect("/NewServlet1.java");
+ } else {
+ // Authentication failed, redirect back to login form
+ response.sendRedirect("newhtml.html");
+ }
+ }
+ }
+ private boolean isValidUser(String email, String password) {
+ // Check against the valid credentials (in a real application, this would typically involve 
+database queries)
+ return email.equals(VALID_EMAIL) && password.equals(VALID_PASSWORD);
+ }
